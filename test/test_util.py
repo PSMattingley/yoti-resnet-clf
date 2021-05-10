@@ -10,7 +10,7 @@ class TestUtilFuncs(TestCase):
         pass
 
     def test_predict_url(self):
-        exp_url = 'http://localhost:8501/v1/models/test:predict'
+        exp_url = 'http://tf-serving:8501/v1/models/test:predict'
         self.assertEqual(get_model_predict_url('test'), exp_url)
 
     def test_retrieve_predictions(self):

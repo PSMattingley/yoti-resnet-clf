@@ -3,6 +3,7 @@ import requests
 import base64
 import json
 import logging
+import os
 
 """
 Image Classification Service 
@@ -25,9 +26,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
-TF_SERVICE_URL = 'http://localhost'
-PORT = 8501
-
 
 @app.route('/')
 def index():
@@ -45,7 +43,7 @@ def classify_resnet():
     """
 
     # Define model to use for this route
-    model = 'resnet_v2_fp32_savedmodel_NHWC_jpg'
+    model = os.environ.get('RESNET_MODEL', 'resnet_v2_fp32_savedmodel_NHWC_jpg')
     supported_formats = ['jpg', 'jpeg']
     logger.info(f'Making prediction on route /classify/resnet using model: {model}')
     model_url = get_model_predict_url(model)
@@ -84,7 +82,9 @@ def get_model_predict_url(model_name):
 
     :return: URL to request for TF model predictions
     """
-    predict_url = f'{TF_SERVICE_URL}:{PORT}/v1/models/{model_name}:predict'
+    tf_service = os.environ.get('TF_SERVICE', 'tf-serving')
+    tf_port = os.environ.get('TF_PORT', 8501)
+    predict_url = f'http://{tf_service}:{tf_port}/v1/models/{model_name}:predict'
     logger.info(f'Making call to tf-serving predict endpoint at {predict_url}')
     return predict_url
 
@@ -108,5 +108,6 @@ def retrieve_predictions(image_data, model_url):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Hardcode to deploy to local host only at this stage
+    app.run(host='0.0.0.0', port=os.environ.get('IC_PORT', 5000))
 
