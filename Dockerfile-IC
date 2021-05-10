@@ -4,6 +4,7 @@ MAINTAINER paulmattingley
 
 ADD requirements.txt /app
 COPY /app /app
+COPY /test /test
 
 RUN pip install -r /app/requirements.txt
 
