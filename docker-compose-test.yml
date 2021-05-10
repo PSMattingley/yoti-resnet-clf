@@ -1,0 +1,25 @@
+version: "3.2"
+services:
+  tf-serving:
+    image: tf-serving
+    build:
+      context: .
+      dockerfile: Dockerfile-TF
+    ports:
+      - "8501:8501"
+    environment:
+      MODEL_NAME: 'resnet_v2_fp32_savedmodel_NHWC_jpg'
+  img-class:
+    image: img-class
+    build:
+      context: .
+      dockerfile: Dockerfile-IC
+    environment:
+      RESNET_MODEL: 'resnet_v2_fp32_savedmodel_NHWC_jpg'
+      TF_SERVICE: 'tf-serving'
+      TF_PORT: 8501
+      IC_PORT: 5000
+    ports:
+      - "5000:5000"
+    # Run tests after bringing up network
+    command: ["python", "-m", "pytest", "test"]
