@@ -1,0 +1,6 @@
+FROM tensorflow/serving
+
+MAINTAINER paulmattingley
+
+COPY models /models
+
